@@ -8,7 +8,7 @@ The name of the project is Generousource
 A web platform that allows users to create initiatives and collect votes in support of those initiatives. The system can be used for structured voting processes, for example within organisations or in scenarios where votes need to be collected across multiple initiatives. If additional resources are available, the platform can be extended to support monetary fundraising initiatives, such as in cases of important or unforeseen events.
 
 ### Intended Audience/User Stories
-###### Intended Audience
+##### Intended Audience
 
 Employees
 
