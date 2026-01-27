@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
-from .models import Fundraiser, Pledge, User
-from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer, UserSerializer
+from .models import Fundraiser, Pledge
+from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer
 
 class FundraiserList(APIView):
 
@@ -52,21 +52,4 @@ class PledgeList(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-class UserList(APIView):
-    def get(self, request):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+
