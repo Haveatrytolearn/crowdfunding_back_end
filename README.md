@@ -3,51 +3,28 @@ Maria Alistratova
 
 ## Planning:
 ### Concept/Name
-The name of the project is Generousource
+The name of the project is **Generousource**
 
-A web platform that allows users to create initiatives and collect votes in support of those initiatives. The system can be used for structured voting processes, for example within organisations or in scenarios where votes need to be collected across multiple initiatives. If additional resources are available, the platform can be extended to support monetary fundraising initiatives, such as in cases of important or unforeseen events.
+This project is a web platform that allows registered users to create fundraising initiatives for various causes and support other users’ initiatives through monetary donations. Donations can be made in any amount via bank transfer or PayPal.
 
 ### Intended Audience/User Stories
 ##### Intended Audience
+The platform is intended for individuals who wish to raise funds for personal, social, or community causes, as well as for users who want to contribute financially to initiatives created by others.
+The platform can be integrated into a company’s internal processes to allow employees to create fundraising initiatives for their needs.
 
-Employees
-
-Employees of the company who want to propose initiatives aimed at improving the workplace, such as office improvements, internal process enhancements, or participation in training and development programs funded by the company.
-
-Employees are able to:
-- create initiatives,
-- edit and publish their initiatives,
-- participate in voting on initiatives proposed by other employees.
-
-Managers
-
-Managers are responsible for reviewing proposed initiatives prior to publication to assess their feasibility and alignment with organisational goals.
-
-Managers are able to:
-- review initiatives submitted by employees,
-- approve or reject initiatives for publication,
-- oversee the initiative after the voting phase,
-- support and facilitate the implementation of approved initiatives.
-
-Finance Department Representatives
-
-Finance department representatives are responsible for evaluating initiatives that require financial resources and ensuring budget availability.
-
-Finance representatives are able to:
-- review initiatives prior to publication to assess budget feasibility,
-- approve initiatives for publication from a financial perspective,
-- allocate company funds to initiatives that have received sufficient support through voting,
-- participate in the execution of financially approved initiatives.
+- As a visitor, I want to browse existing fundraising initiatives so that I can decide whether I want to register on the platform and support a cause.
+- As a visitor, I want to register on the website so that I can donate to existing initiatives or create my own fundraiser.
+- As a user, I want to log in to the platform so that I can access features that require authentication.
+- As a registered user, I want to create my own fundraising initiative so that I can raise funds for a cause I care about.
+- As a registered user, I want to donate to other users’ initiatives so that I can support causes I believe in.
+- As a registered user, I want to see whether I have already donated to an initiative so that I do not accidentally donate twice.
+- As a fundraiser creator, I want to view donations made to my initiative so that I can track its progress.
 
 
 ### Front End Pages/Functionality
-- {{ A page on the front end }}
-    - {{ A list of dot-points showing functionality is available on this page }}
-    - {{ etc }}
-    - {{ etc }}
-- {{ A second page available on the front end }}
-    - {{ Another list of dot-points showing functionality }}
-    - {{ etc }}
+![Website pages 1-4: List of initiatives with search, initiative details with donation option, payment details form with card input fields, and new fundraiser creation form](crowdfunding\Project image\1-4 pages.jpg)
+![Website pages 5-8: Read more option for initiatives, donation success page, start fundraiser page requiring form completion and submission for publication](crowdfunding\Project image\5-8 pages.jpg)
+
 
 ### API Spec
 {{ Fill out the table below to define your endpoints. An example of what this might look like is shown at the bottom of the page. 
