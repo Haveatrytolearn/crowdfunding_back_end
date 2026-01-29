@@ -22,8 +22,8 @@ The platform can be integrated into a company’s internal processes to allow em
 
 
 ### Front End Pages/Functionality
-![Website pages 1-4: List of initiatives with search, initiative details with donation option, payment details form with card input fields, and new fundraiser creation form](crowdfunding\Project image\1-4 pages.jpg)
-![Website pages 5-8: Read more option for initiatives, donation success page, start fundraiser page requiring form completion and submission for publication](crowdfunding\Project image\5-8 pages.jpg)
+![Website pages 1-4: List of initiatives with search, initiative details with donation option, payment details form with card input fields, and new fundraiser creation form](crowdfunding/Project%20image/1-4%20pages.jpg)
+![Website pages 5-8: Read more option for initiatives, donation success page, start fundraiser page requiring form completion and submission for publication](crowdfunding/Project%20image/5-8%20pages.jpg)
 
 
 ### API Spec
@@ -38,4 +38,4 @@ It can be helpful to keep the markdown preview open in VS Code so that you can s
 |     |             |         |              |                       |                              |
 
 ### DB Schema
-![]( {{ ./relative/path/to/your/schema/image.png }} )
+![Database Schema](./crowdfunding/Project%20image/schema.png)
