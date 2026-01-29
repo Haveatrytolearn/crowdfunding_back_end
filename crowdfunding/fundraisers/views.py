@@ -1,10 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import get_object_or_404
 from .models import Fundraiser, Pledge
 from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer
 
@@ -18,7 +17,7 @@ class FundraiserList(APIView):
     def post(self, request):
         serializer = FundraiserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
@@ -42,11 +41,11 @@ class PledgeList(APIView):
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
         if serializer.is_valid(): 
-            serializer.save()
+            serializer.save(supporter=request.user)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
-        )
+            )
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST

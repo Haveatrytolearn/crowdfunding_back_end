@@ -3,14 +3,13 @@ from .models import Fundraiser, Pledge
  
 class FundraiserSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
-    
     class Meta:
         model = Fundraiser
         fields = '__all__'
 
 class PledgeSerializer(serializers.ModelSerializer):
     supporter = serializers.ReadOnlyField(source='supporter.id')
-    
+    fundraiser = serializers.PrimaryKeyRelatedField(queryset=Fundraiser.objects.all())
     class Meta:
         model = Pledge
         fields = "__all__"
