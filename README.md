@@ -22,17 +22,12 @@ The platform can be integrated into a company’s internal processes to allow em
 
 
 ### Front End Pages/Functionality
-![Website pages 1-4: List of initiatives with search, log in page, Registration form, Homepage](crowdfunding\Project%20image\1%20to%204%20project%20image.jpg)
-![Website pages 5-8: Read more option for initiatives, Fundraiser page, Payment page, New Fundraiser](crowdfunding\Project%20image\5%20to%208%20project%20image.jpg)
-![Website pages 9-10: List of the pledges, My profile](crowdfunding\Projectimage\9%20to%2010%20project%20image.jpg)
+![Website pages 1-4: List of initiatives with search, log in page, Registration form, Homepage](crowdfunding/Project%20image/1%20to%204%20project%20image.jpg)
+![Website pages 5-8: Read more option for initiatives, Fundraiser page, Payment page, New Fundraiser](crowdfunding/Project%20image/5%20to%208%20project%20image.jpg)
+![Website pages 9-10: List of the pledges, My profile](crowdfunding/Project%20image/9%20to%2010%20project%20image.jpg)
 
 
 ### API Spec
-{{ Fill out the table below to define your endpoints. An example of what this might look like is shown at the bottom of the page. 
-
-It might look messy here in the PDF, but once it's rendered it looks very neat! 
-
-It can be helpful to keep the markdown preview open in VS Code so that you can see what you're typing more easily. }}
 
 | URL | HTTP Method | Purpose | Request Body | Success Response Code | Authentication/Authorisation |
 | --- | ----------- | ------- | ------------ | --------------------- | ---------------------------- |
@@ -49,4 +44,4 @@ It can be helpful to keep the markdown preview open in VS Code so that you can s
 | /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Logged in |
 
 ### DB Schema
-![Database Schema](crowdfunding\Project%20image\Fundraiser_scheme-Simple%20version.drawio.png)
+![Database Schema](crowdfunding/Project%20image/Fundraiser_scheme-Simple%20version.drawio.png)
