@@ -10,11 +10,19 @@ from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetai
 class FundraiserList(APIView):
 
     def get(self, request):
-        fundraisers = Fundraiser.objects.all()
+        # Получить 20 последних инициатив, отсортированных по дате создания (новые первыми)
+        fundraisers = Fundraiser.objects.all().order_by('-date_created')[:20]
         serializer = FundraiserSerializer(fundraisers, many=True)
         return Response(serializer.data)
     
     def post(self, request):
+        # Проверка авторизации
+        if not request.user.is_authenticated:
+            return Response(
+                {'detail': 'Authentication credentials were not provided.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
         serializer = FundraiserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
@@ -39,6 +47,13 @@ class PledgeList(APIView):
         return Response(serializer.data)
     
     def post(self, request):
+        # Проверка авторизации
+        if not request.user.is_authenticated:
+            return Response(
+                {'detail': 'Authentication credentials were not provided.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
         serializer = PledgeSerializer(data=request.data)
         if serializer.is_valid(): 
             serializer.save(supporter=request.user)

@@ -22,8 +22,9 @@ The platform can be integrated into a company’s internal processes to allow em
 
 
 ### Front End Pages/Functionality
-![Website pages 1-4: List of initiatives with search, initiative details with donation option, payment details form with card input fields, and new fundraiser creation form](crowdfunding/Project%20image/1-4%20pages.jpg)
-![Website pages 5-8: Read more option for initiatives, donation success page, start fundraiser page requiring form completion and submission for publication](crowdfunding/Project%20image/5-8%20pages.jpg)
+![Website pages 1-4: List of initiatives with search, log in page, Registration form, Homepage](crowdfunding\Project%20image\1%20to%204%20project%20image.jpg)
+![Website pages 5-8: Read more option for initiatives, Fundraiser page, Payment page, New Fundraiser](crowdfunding\Project%20image\5%20to%208%20project%20image.jpg)
+![Website pages 9-10: List of the pledges, My profile](crowdfunding\Projectimage\9%20to%2010%20project%20image.jpg)
 
 
 ### API Spec
@@ -35,7 +36,17 @@ It can be helpful to keep the markdown preview open in VS Code so that you can s
 
 | URL | HTTP Method | Purpose | Request Body | Success Response Code | Authentication/Authorisation |
 | --- | ----------- | ------- | ------------ | --------------------- | ---------------------------- |
-|     |             |         |              |                       |                              |
+|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | None |
+| /fundraisers/ | GET | Retrieve a list of fundraisers | N/A | 200 | None |
+| /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Logged in |
+| /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | None |
+| /fundraisers/<int:pk>/ | PATCH | Update fundraiser details | Updated fundraiser fields | 200 | Logged in |
+| /users/ | GET | Retrieve a list of users | N/A | 201 | None|
+| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | None|
+| /users/<int:pk> | GET | Retrieve user details | N/A | 200 | None|
+| /users/<int:pk> | PATCH | Update user details | Updated user fields | 200 | Logged in|
+| /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | None |
+| /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Logged in |
 
 ### DB Schema
-![Database Schema](./crowdfunding/Project%20image/schema.png)
+![Database Schema](crowdfunding\Project%20image\Fundraiser_scheme-Simple%20version.drawio.png)
