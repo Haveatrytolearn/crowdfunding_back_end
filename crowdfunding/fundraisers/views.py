@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Fundraiser, Pledge
-from .permissions import IsOwnerOrReadOnly
-from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer
+from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly
+from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer, PledgeDetailSerializer
 
 class FundraiserList(APIView):
     permission_classes = [
@@ -61,6 +61,10 @@ class FundraiserDetail(APIView):
         )
 #
 class PledgeList(APIView):
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly]
+
+
     def get(self, request):
         pledges = Pledge.objects.all()
         serializer = PledgeSerializer(pledges, many=True)
@@ -78,5 +82,34 @@ class PledgeList(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-
+    
+class PledgesDetail(APIView):
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsSupporterOrReadOnly
+    ]
+    
+    def get(self, request, pk):
+        pledge = get_object_or_404(Pledge, pk=pk)
+        serializer = PledgeSerializer(pledge)
+        return Response(serializer.data)
+    
+ # Biagio version of the code   
+    def put(self, request, pk):
+        pledge = get_object_or_404(Pledge, pk=pk)
+        self.check_object_permissions(request, pledge)
+        serializer = PledgeSerializer(
+            instance=pledge,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+#
 
