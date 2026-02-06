@@ -31,17 +31,18 @@ The platform can be integrated into a company’s internal processes to allow em
 
 | URL | HTTP Method | Purpose | Request Body | Success Response Code | Authentication/Authorisation |
 | --- | ----------- | ------- | ------------ | --------------------- | ---------------------------- |
-|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | None |
+|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | Authentication |
 | /fundraisers/ | GET | Retrieve a list of fundraisers | N/A | 200 | None |
-| /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Logged in |
-| /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | None |
-| /fundraisers/<int:pk>/ | PATCH | Update fundraiser details | Updated fundraiser fields | 200 | Logged in |
-| /users/ | GET | Retrieve a list of users | N/A | 201 | None|
-| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | None|
-| /users/<int:pk> | GET | Retrieve user details | N/A | 200 | None|
-| /users/<int:pk> | PATCH | Update user details | Updated user fields | 200 | Logged in|
+| /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Authentication/Authorisation |
+| /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | Authentication/Authorisation |
+| /fundraisers/<int:pk>/ | PATCH | Update fundraiser details | Updated fundraiser fields | 200 | Authentication/Authorisation |
+| /users/ | GET | Retrieve a list of users | N/A | 201 | Authentication/Authorisation |
+| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
+| /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
+| /users/<int:pk> | PATCH | Update user details | Updated user fields | 200 | Authentication/Authorisation |
 | /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | None |
-| /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Logged in |
+| /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
+| /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 201 | Authentication/Authorisation |
 
 ### DB Schema
 ![Database Schema](crowdfunding/Project%20image/Fundraiser_scheme-Simple%20version.drawio.png)
