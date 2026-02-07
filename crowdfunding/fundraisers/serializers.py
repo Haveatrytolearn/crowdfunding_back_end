@@ -9,17 +9,21 @@ class FundraiserSerializer(serializers.ModelSerializer):
 
 class PledgeSerializer(serializers.ModelSerializer):
     supporter = serializers.ReadOnlyField(source='supporter.id')
-    fundraiser = serializers.PrimaryKeyRelatedField(queryset=Fundraiser.objects.all())
+    fundraiser = serializers.PrimaryKeyRelatedField(queryset=Fundraiser.objects.filter(is_deleted=False))  # added filter for deleted
+
     class Meta:
         model = Pledge
         fields = "__all__"
 
 class FundraiserDetailSerializer(FundraiserSerializer):
     pledges = PledgeSerializer(many=True, read_only=True)
+    goal = serializers.ReadOnlyField() # ← not allowed to update
+    description = serializers.ReadOnlyField()  # ← not allowed to update
 
     def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
+        # instance.title = validated_data.get('title', instance.title)
+        # instance.description = validated_data.get('description', instance.description)
+        # not allowed to update
         instance.goal = validated_data.get('goal', instance.goal)
         instance.image = validated_data.get('image', instance.image)
         instance.is_open = validated_data.get('is_open', instance.is_open)
@@ -30,11 +34,12 @@ class FundraiserDetailSerializer(FundraiserSerializer):
 
 class PledgeDetailSerializer(PledgeSerializer):
     pledges = PledgeSerializer(many=True, read_only=True)
+    amount = serializers.ReadOnlyField()  # ← amount not allowed to update
 
     def update(self, instance, validated_data):
         instance.supporter = validated_data.get('supporter', instance.supporter)
         instance.fundraiser = validated_data.get('fundraiser', instance.fundraiser)
-        instance.amount = validated_data.get('amount', instance.amount)
+        # amount not allowed to update - read-only
         instance.comment = validated_data.get('comment', instance.comment)
         instance.anonymous = validated_data.get('anonymous', instance.anonymous)
         instance.save()

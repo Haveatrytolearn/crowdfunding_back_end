@@ -8,6 +8,7 @@ class Fundraiser(models.Model):
     goal = models.IntegerField()
     image = models.URLField()
     is_open = models.BooleanField()
+    is_deleted = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(
         get_user_model(),
