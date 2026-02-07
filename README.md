@@ -18,7 +18,12 @@ The platform can be integrated into a company’s internal processes to allow em
 - As a registered user, I want to create my own fundraising initiative so that I can raise funds for a cause I care about.
 - As a registered user, I want to donate to other users’ initiatives so that I can support causes I believe in.
 - As a registered user, I want to see whether I have already donated to an initiative so that I do not accidentally donate twice.
+- As a donor, I can edit a pledge, but the amount cannot be changed after donation.
 - As a fundraiser creator, I want to view donations made to my initiative so that I can track its progress.
+- As a fundraiser creator, I can edit a fundraiser, but the title and description cannot be changed after creation.
+- As a fundraiser owner, I can delete a fundraiser, but all related data, including donors and their pledges, must be retained in the database.
+- As an admin, I can view the list of fundraisers.
+- As an admin or fundraiser owner, I can view fundraiser details along with the list of pledges.
 
 
 ### Front End Pages/Functionality
@@ -36,6 +41,7 @@ The platform can be integrated into a company’s internal processes to allow em
 | /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ | PATCH | Update fundraiser details | Updated fundraiser fields | 200 | Authentication/Authorisation |
+| /fundraisers/deleted/ | DELETE | Retrieve deleted fundraisers | N/A | 200 | Authentication/Authorisation |
 | /users/ | GET | Retrieve a list of users | N/A | 201 | Authentication/Authorisation |
 | /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
 | /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
