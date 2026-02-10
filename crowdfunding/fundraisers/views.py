@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -86,12 +87,23 @@ class DeletedFundraiserDetail(APIView):
         return Response(serializer.data)
 
 class PledgeList(APIView):
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly]
-
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        pledges = Pledge.objects.filter(fundraiser__is_deleted=False)
+        # Admin видит все взносы
+        if request.user.is_staff:
+            pledges = Pledge.objects.filter(fundraiser__is_deleted=False)
+        else:
+            # Обычный пользователь видит:
+            # 1. Свои взносы
+            # 2. Взносы к своим fundraisers
+            pledges = Pledge.objects.filter(
+                fundraiser__is_deleted=False
+            ).filter(
+                Q(supporter=request.user) |  # Свои взносы
+                Q(fundraiser__owner=request.user)  # Взносы к своим проектам
+            )
+        
         serializer = PledgeSerializer(pledges, many=True)
         return Response(serializer.data)
     

@@ -17,8 +17,13 @@ class PledgeSerializer(serializers.ModelSerializer):
 
 class FundraiserDetailSerializer(FundraiserSerializer):
     pledges = PledgeSerializer(many=True, read_only=True)
+    amount_raised = serializers.SerializerMethodField()
     goal = serializers.ReadOnlyField() # ← not allowed to update
     description = serializers.ReadOnlyField()  # ← not allowed to update
+
+    def get_amount_raised(self, obj):
+        """Count raised sum"""
+        return sum([pledge.amount for pledge in obj.pledges.all()])
 
     def update(self, instance, validated_data):
         # instance.title = validated_data.get('title', instance.title)
