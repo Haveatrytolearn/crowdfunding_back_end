@@ -19,4 +19,4 @@ class IsAdminOrOwner(permissions.BasePermission):
         if request.user and request.user.is_staff:
             return True
         # The owner can see only his/hers
-        return obj.owner == request.user
+        return request.user.is_staff or obj.owner == request.user

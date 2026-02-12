@@ -33,7 +33,7 @@ class FundraiserList(APIView):
 class FundraiserDetail(APIView):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly
+        IsAdminOrOwner
     ]
     
     def get(self, request, pk):
@@ -64,10 +64,10 @@ class FundraiserDetail(APIView):
         self.check_object_permissions(request, fundraiser)
         fundraiser.is_deleted = True
         fundraiser.is_open = False
-        fundraiser.save()
+        fundraiser.save(update_fields=["is_deleted", "is_open"])
         return Response(
             {'message': 'Fundraiser successfully deleted'},
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_200_OK
         )
 class DeletedFundraiserList(APIView):
     permission_classes = [permissions.IsAdminUser]  # Only admins can see deleted
@@ -85,23 +85,34 @@ class DeletedFundraiserDetail(APIView):
         self.check_object_permissions(request, fundraiser)
         serializer = FundraiserDetailSerializer(fundraiser)
         return Response(serializer.data)
-
+###
+    def delete(self, request, pk):
+        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False)
+        self.check_object_permissions(request, fundraiser)
+        fundraiser.is_deleted = True
+        fundraiser.is_open = False
+        fundraiser.save(update_fields=["is_deleted", "is_open"])
+        return Response(
+            {'message': 'Fundraiser successfully deleted'},
+            status=status.HTTP_200_OK
+        )
+###
 class PledgeList(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        # Admin видит все взносы
+        # Admin can view all pledges
         if request.user.is_staff:
             pledges = Pledge.objects.filter(fundraiser__is_deleted=False)
         else:
-            # Обычный пользователь видит:
-            # 1. Свои взносы
-            # 2. Взносы к своим fundraisers
+            # User can view:
+            # 1. It's own pledges
+            # 2. Pledges to his fundraisers
             pledges = Pledge.objects.filter(
                 fundraiser__is_deleted=False
             ).filter(
-                Q(supporter=request.user) |  # Свои взносы
-                Q(fundraiser__owner=request.user)  # Взносы к своим проектам
+                Q(supporter=request.user) |  # His pledges
+                Q(fundraiser__owner=request.user)  # Pledges to his fundraisers
             )
         
         serializer = PledgeSerializer(pledges, many=True)

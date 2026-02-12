@@ -3,17 +3,47 @@ from .models import Fundraiser, Pledge
  
 class FundraiserSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
+    ####
+    amount_raised = serializers.SerializerMethodField()
+    
+    def get_amount_raised(self, obj):
+        """Count raised sum"""
+        return sum([pledge.amount for pledge in obj.pledges.all()])
+###
     class Meta:
         model = Fundraiser
         fields = '__all__'
 
 class PledgeSerializer(serializers.ModelSerializer):
     supporter = serializers.ReadOnlyField(source='supporter.id')
-    fundraiser = serializers.PrimaryKeyRelatedField(queryset=Fundraiser.objects.filter(is_deleted=False))  # added filter for deleted
-
+    fundraiser = serializers.PrimaryKeyRelatedField(
+        queryset=Fundraiser.objects.filter(is_deleted=False))  # added filter for deleted
+        
     class Meta:
         model = Pledge
         fields = "__all__"
+
+    def validate(self, data):
+        """Check if the pledge exceeds the amount of the fundraiser"""
+        fundraiser = data.get('fundraiser')
+        amount = data.get('amount')
+        
+        if fundraiser and amount:
+            # Count total pledges
+            total_pledges = sum([
+                pledge.amount for pledge in fundraiser.pledges.all()
+            ])
+            
+            # If new pledge exceeds the rest of the amount 
+            if total_pledges + amount > fundraiser.goal:
+                raise serializers.ValidationError(
+                    f"Cannot pledge more than goal. "
+                    f"Goal: {fundraiser.goal}, "
+                    f"Already raised: {total_pledges}, "
+                    f"Remaining: {fundraiser.goal - total_pledges}"
+                )
+        
+        return data
 
 class FundraiserDetailSerializer(FundraiserSerializer):
     pledges = PledgeSerializer(many=True, read_only=True)
