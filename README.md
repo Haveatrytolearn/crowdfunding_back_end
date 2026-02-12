@@ -31,31 +31,31 @@ The platform can be integrated into a company’s internal processes to allow em
 ### Front End Pages/Functionality
 ![Website pages 1-4: List of initiatives with search, log in page, Registration form, Homepage](crowdfunding/Project%20image/1%20to%204%20project%20image.jpg)
 ![Website pages 5-8: Read more option for initiatives, Fundraiser page, Payment page, New Fundraiser](crowdfunding/Project%20image/5%20to%208%20project%20image.jpg)
-![Website pages 9-10: List of the pledges, My profile](crowdfunding/Project%20image/9%20to%2010%20project%20image.jpg)
+![Website pages 9-12: List of the pledges, My profile, Fundraiser, List of deleted fundraiser](crowdfunding/Project%20image/9%20to%2012%20project%20image.jpg)
 
 
 ### API Spec
 
 | URL | HTTP Method | Purpose | Request Body | Success Response Code | Authentication/Authorisation |
 | --- | ----------- | ------- | ------------ | --------------------- | ---------------------------- |
-####|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | Authentication |
-####| /fundraisers/ | GET | Retrieve a list of fundraisers | N/A | 200 | None |
-####| /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Authentication/Authorisation |
-####| /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | Authentication/Authorisation |
-####| /fundraisers/<int:pk>/ | PUT | Update fundraiser details | Updated fundraiser fields | 200 | Authentication/Authorisation |
-####| /fundraisers/deleted/ | GET | Retrieve deleted fundraisers | N/A | 200 | Authentication/Authorisation |
-####| '/fundraisers/deleted/<int:pk>/' | GET | Retrieve a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
-####| '/fundraisers/deleted/<int:pk>/' | DELETE | Delete a fundraiser | N/A | 200 | Authentication/Authorisation |
-####| /users/ | GET | Retrieve a list of users | N/A | 200 | Authentication/Authorisation |
-####| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
-####| /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
-####| /users/<int:pk> | PUT | Update user details | Updated user fields | 200 | Authentication/Authorisation |
-####| /users/deleted/ | GET | Retrieve deleted users | N/A | 200 | Authentication/Authorisation |
-####| '/users/deleted/<int:pk>/'| GET | Retrieve a deleted user | N/A | 200 | Authentication/Authorisation |
-####| '/users/deleted/<int:pk>/'| DELETE | Delete a user | N/A | 200 | Authentication/Authorisation |
-####| /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | Authentication |
-####| /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
-####| /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 200 | Authentication/Authorisation |
+|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | Authentication |
+| /fundraisers/ | GET | Retrieve a list of fundraisers | N/A | 200 | None |
+| /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Authentication/Authorisation |
+| /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | Authentication/Authorisation |
+| /fundraisers/<int:pk>/ | PUT | Update fundraiser details | Updated fundraiser fields | 200 | Authentication/Authorisation |
+| /fundraisers/deleted/ | GET | Retrieve deleted fundraisers | N/A | 200 | Authentication/Authorisation |
+| '/fundraisers/deleted/<int:pk>/' | GET | Retrieve a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
+| '/fundraisers/deleted/<int:pk>/' | DELETE | Delete a fundraiser | N/A | 200 | Authentication/Authorisation |
+| /users/ | GET | Retrieve a list of users | N/A | 200 | Authentication/Authorisation |
+| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
+| /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
+| /users/<int:pk> | PUT | Update user details | Updated user fields | 200 | Authentication/Authorisation |
+| /users/deleted/ | GET | Retrieve deleted users | N/A | 200 | Authentication/Authorisation |
+| '/users/deleted/<int:pk>/'| GET | Retrieve a deleted user | N/A | 200 | Authentication/Authorisation |
+| '/users/deleted/<int:pk>/'| DELETE | Delete a user | N/A | 200 | Authentication/Authorisation |
+| /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | Authentication |
+| /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
+| /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 200 | Authentication/Authorisation |
 
 ### DB Schema
-![Database Schema](crowdfunding/Project%20image/Fundraiser_scheme-Simple%20version.drawio.png)
+![Database Schema](crowdfunding/Project%20image/DB%Diagram.jpg)
