@@ -58,4 +58,4 @@ The platform can be integrated into a company’s internal processes to allow em
 | /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 200 | Authentication/Authorisation |
 
 ### DB Schema
-![Database Schema](crowdfunding/Project%20image/DB%20Diagram.jpg)
+![Database Schema](crowdfunding/Project%20image/DB_Diargam.jpg)
