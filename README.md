@@ -62,6 +62,7 @@ GET method
 ![GeET Method](crowdfunding/Project%20image/GET_method.jpg)
 
 POST method
+This example demonstrates how the pre-set limits function. If a user attempts to donate more than the fundraiser goal, the system prevents the transaction.
 ![POST Method](crowdfunding/Project%20image/POST_method.jpg)
 
 Obtaining a Token
