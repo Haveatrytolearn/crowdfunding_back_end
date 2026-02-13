@@ -4,8 +4,9 @@ Maria Alistratova
 ## Planning:
 ### Concept/Name
 The name of the project is **Generousource**
+Deployment link (Heroku): https://generousource-9fa74612af46.herokuapp.com/
 
-This project is a web platform that allows registered users to create fundraising initiatives for various causes and support other users’ initiatives through monetary donations. Donations can be made in any amount via bank transfer or PayPal.
+This project is a web platform that allows registered users to create fundraising initiatives for various causes and support other users’ initiatives through monetary donations. Users can make donations in any amount, and the system ensures that the total pledged amount does not exceed the fundraising target.
 
 ### Intended Audience/User Stories
 ##### Intended Audience
@@ -20,11 +21,10 @@ The platform can be integrated into a company’s internal processes to allow em
 - As a registered user, I want to see whether I have already donated to an initiative so that I do not accidentally donate twice.
 - As a registered user, I want to update my personal information in my profile so that my account details remain accurate.
 - As a donor, I can edit a pledge, but the amount cannot be changed after donation.
-- As a fundraiser creator, I want to view donations made to my initiative so that I can track its progress.
-- As a fundraiser creator, I can edit a fundraiser, but the title and description cannot be changed after creation.
+- As a fundraiser owner, I want to view donations made to my initiative so that I can track its progress.
+- As a fundraiser owner, I can edit a fundraiser, but the title and description cannot be changed after creation.
 - As a fundraiser owner, I can delete a fundraiser, but all related data, including donors and their pledges, must be retained in the database.
-- As an admin, I can view the list of deleted users and 
-- fundraisers.
+- As an admin, I can view the list of deleted users and fundraisers.
 - As an admin or fundraiser owner, I can view the details of a deleted fundraiser along with its list of pledges.
 
 
@@ -56,6 +56,24 @@ The platform can be integrated into a company’s internal processes to allow em
 | /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | Authentication |
 | /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
 | /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 200 | Authentication/Authorisation |
+
+### Insomnia API Screenshots
+GET method
+![GeET Method](crowdfunding/Project%20image/GET_method.jpg)
+
+POST method
+![POST Method](crowdfunding/Project%20image/POST_method.jpg)
+
+Obtaining a Token
+![Token](crowdfunding/Project%20image/Token.jpg)
+
+To register a new user, complete the registration form (see image 3 in the “Front End Pages / Functionality” section).
+Below is an example of how the request appears in Insomnia:
+![Token](crowdfunding/Project%20image/Create_new_user.jpg)
+
+To create a new fundraiser, see image 8 in the “Front End Pages / Functionality” section).
+Below is an example of how the request appears in Insomnia:
+![Token](crowdfunding/Project%20image/Create_fundraiser.jpg)
 
 ### DB Schema
 ![Database Schema](crowdfunding/Project%20image/DB_Diargam.jpg)
