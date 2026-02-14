@@ -9,9 +9,14 @@ from .permissions import IsAdminOrOwner
 from .serializers import CustomUserSerializer, UserDetailSerializer
 
 class CustomUserList(APIView):
-    permission_classes = [permissions.IsAdminUser]
+    #permission_classes = [permissions.IsAdminUser]
+#
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [permissions.AllowAny()]  # anyone can register
+        return [permissions.IsAdminUser()]  # only admin can list users
 
-
+#
     def get(self, request):
         users = CustomUser.objects.filter(is_active=True)
         serializer = CustomUserSerializer(users, many=True)
