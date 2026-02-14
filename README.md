@@ -69,6 +69,9 @@ This example demonstrates how the pre-set limits function. If a user attempts to
 PUT method
 ![PUT Method](crowdfunding/Project%20image/PUT_method.jpg)
 
+DELETE method
+![DELETE Method](crowdfunding/Project%20image/DELETE_method.jpg)
+
 Obtaining a Token
 ![Token](crowdfunding/Project%20image/Token.jpg)
 
