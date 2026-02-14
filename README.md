@@ -59,11 +59,15 @@ The platform can be integrated into a company’s internal processes to allow em
 
 ### Insomnia API Screenshots
 GET method
-![GeET Method](crowdfunding/Project%20image/GET_method.jpg)
+![GET Method](crowdfunding/Project%20image/GET_method.jpg)
 
 POST method
+
 This example demonstrates how the pre-set limits function. If a user attempts to donate more than the fundraiser goal, the system prevents the transaction.
 ![POST Method](crowdfunding/Project%20image/POST_method.jpg)
+
+PUT method
+![PUT Method](crowdfunding/Project%20image/PUT_method.jpg)
 
 Obtaining a Token
 ![Token](crowdfunding/Project%20image/Token.jpg)
