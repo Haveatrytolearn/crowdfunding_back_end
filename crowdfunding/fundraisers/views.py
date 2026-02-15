@@ -14,7 +14,9 @@ class FundraiserList(APIView):
         permissions.IsAuthenticatedOrReadOnly]
     
     def get(self, request):
-        fundraisers = Fundraiser.objects.filter(is_deleted=False)
+        fundraisers = Fundraiser.objects.filter(
+            is_deleted=False,
+            owner__is_active=True)
         serializer = FundraiserSerializer(fundraisers, many=True)
         return Response(serializer.data)
     
@@ -37,13 +39,13 @@ class FundraiserDetail(APIView):
     ]
     
     def get(self, request, pk):
-        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False)
+        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False, owner__is_active=True)
         serializer = FundraiserDetailSerializer(fundraiser)
         return Response(serializer.data)
  
  # Biagio version of the code   
     def put(self, request, pk):
-        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False)
+        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False, owner__is_active=True)
         self.check_object_permissions(request, fundraiser)
         serializer = FundraiserDetailSerializer(
             instance=fundraiser,
@@ -60,11 +62,13 @@ class FundraiserDetail(APIView):
         )
     
     def delete(self, request, pk):
-        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False)
+        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False, owner__is_active=True)
         self.check_object_permissions(request, fundraiser)
         fundraiser.is_deleted = True
         fundraiser.is_open = False
         fundraiser.save(update_fields=["is_deleted", "is_open"])
+        # ✅ soft delete pledges
+        fundraiser.pledges.filter(is_deleted=False).update(is_deleted=True)
         return Response(
             {'message': 'Fundraiser successfully deleted'},
             status=status.HTTP_200_OK
@@ -87,7 +91,7 @@ class DeletedFundraiserDetail(APIView):
         return Response(serializer.data)
 ###
     def delete(self, request, pk):
-        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False)
+        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=True)
         self.check_object_permissions(request, fundraiser)
         fundraiser.is_deleted = True
         fundraiser.is_open = False
@@ -101,16 +105,16 @@ class PledgeList(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        # Admin can view all pledges
+        base_qs = Pledge.objects.filter(
+            is_deleted=False,                 # ✅ NEW: скрываем soft-deleted pledges
+            fundraiser__is_deleted=False      # ✅ чтобы не показывать pledges удалённых fundraiser
+        )
+
+    # Admin can view all pledges
         if request.user.is_staff:
-            pledges = Pledge.objects.filter(fundraiser__is_deleted=False)
+            pledges = base_qs
         else:
-            # User can view:
-            # 1. It's own pledges
-            # 2. Pledges to his fundraisers
-            pledges = Pledge.objects.filter(
-                fundraiser__is_deleted=False
-            ).filter(
+            pledges = base_qs.filter(
                 Q(supporter=request.user) |  # His pledges
                 Q(fundraiser__owner=request.user)  # Pledges to his fundraisers
             )
@@ -118,6 +122,18 @@ class PledgeList(APIView):
         serializer = PledgeSerializer(pledges, many=True)
         return Response(serializer.data)
     
+
+        # Admin can view all pledges
+        #if request.user.is_staff:
+           # pledges = Pledge.objects.filter(fundraiser__is_deleted=False)
+        #else:
+            # User can view:
+            # 1. It's own pledges
+            # 2. Pledges to his fundraisers
+            #pledges = Pledge.objects.filter(
+            #    fundraiser__is_deleted=False
+            #).filter(
+
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
         if serializer.is_valid(): 
@@ -138,26 +154,44 @@ class PledgesDetail(APIView):
     ]
     
     def get(self, request, pk):
-        pledge = get_object_or_404(Pledge, pk=pk)
+        pledge = get_object_or_404(Pledge, pk=pk, is_deleted=False, fundraiser__is_deleted=False)
         serializer = PledgeSerializer(pledge)
         return Response(serializer.data)
     
  # Biagio version of the code   
     def put(self, request, pk):
-        pledge = get_object_or_404(Pledge, pk=pk)
+        pledge = get_object_or_404(Pledge, pk=pk, is_deleted=False, fundraiser__is_deleted=False)
         self.check_object_permissions(request, pledge)
         serializer = PledgeDetailSerializer(
             instance=pledge,
             data=request.data,
             partial=True
         )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+        #if serializer.is_valid():
+        #    serializer.save()
+        #    return Response(serializer.data)
         
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
-#
+        #return Response(
+        #    serializer.errors,
+        #    status=status.HTTP_400_BAD_REQUEST
+        #)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
+    def delete(self, request, pk):
+        pledge = get_object_or_404(
+            Pledge,
+            pk=pk,
+            is_deleted=False,
+            fundraiser__is_deleted=False
+        )
+        self.check_object_permissions(request, pledge)
+
+        pledge.is_deleted = True
+        pledge.save(update_fields=["is_deleted"])
+
+        return Response(
+            {"message": "Pledge successfully deleted"},
+            status=status.HTTP_200_OK
+        )

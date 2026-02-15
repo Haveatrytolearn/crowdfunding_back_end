@@ -9,12 +9,12 @@ from .permissions import IsAdminOrOwner
 from .serializers import CustomUserSerializer, UserDetailSerializer
 
 class CustomUserList(APIView):
-    #permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 #
     def get_permissions(self):
-        if self.request.method == "POST":
-            return [permissions.AllowAny()]  # anyone can register
-        return [permissions.IsAdminUser()]  # only admin can list users
+        if self.request.method == "GET":
+            return [permissions.IsAdminUser()]   # the list can view only admin
+        return super().get_permissions()         # for POST take AllowAny
 
 #
     def get(self, request):
@@ -66,8 +66,16 @@ class CustomUserDetail(APIView):
     def delete(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
         self.check_object_permissions(request, user)
+        #1 soft delete user
         user.is_active = False
         user.save(update_fields=["is_active"])
+        # 2) soft delete all fundraisers owned by this user
+        from fundraisers.models import Fundraiser  # <-- замени fundraisers на имя твоего приложения
+        Fundraiser.objects.filter(owner=user, is_deleted=False).update(
+            is_deleted=True,
+            is_open=False
+        )
+
         return Response(
             {'message': 'User successfully deleted'},
             status=status.HTTP_200_OK
@@ -105,3 +113,20 @@ class CustomAuthToken(ObtainAuthToken):
             'user_id': user.id,
             'email': user.email
         })
+class RestoreUser(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk, is_active=False)
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+#restore fundraiser
+        from fundraisers.models import Fundraiser
+        Fundraiser.objects.filter(owner=user, is_deleted=True).update(
+            is_deleted=False,
+            is_open=True
+        )
+
+
+        return Response({"message": "User and related fundraisers restored successfully"}, 
+                        status=status.HTTP_200_OK)

@@ -22,6 +22,7 @@ class PledgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pledge
         fields = "__all__"
+        read_only_fields = ("is_deleted",)
 
     def validate(self, data):
         """Check if the pledge exceeds the amount of the fundraiser"""
@@ -46,14 +47,22 @@ class PledgeSerializer(serializers.ModelSerializer):
         return data
 
 class FundraiserDetailSerializer(FundraiserSerializer):
-    pledges = PledgeSerializer(many=True, read_only=True)
+    #pledges = PledgeSerializer(many=True, read_only=True)
+    pledges = serializers.SerializerMethodField()
     amount_raised = serializers.SerializerMethodField()
     goal = serializers.ReadOnlyField() # ← not allowed to update
     description = serializers.ReadOnlyField()  # ← not allowed to update
 
+    #def get_amount_raised(self, obj):
+       # """Count raised sum"""
+        #return sum([pledge.amount for pledge in obj.pledges.all()])
+
+    def get_pledges(self, obj):
+        qs = obj.pledges.filter(is_deleted=False)  # ✅ only active pledges
+        return PledgeSerializer(qs, many=True).data
+
     def get_amount_raised(self, obj):
-        """Count raised sum"""
-        return sum([pledge.amount for pledge in obj.pledges.all()])
+        return sum([p.amount for p in obj.pledges.filter(is_deleted=False)])
 
     def update(self, instance, validated_data):
         forbidden_fields = ["title", "description"]

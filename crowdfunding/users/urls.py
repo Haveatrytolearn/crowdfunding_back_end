@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('users/', views.CustomUserList.as_view()),
+    path("users/restore/<int:pk>/", views.RestoreUser.as_view()),
     path('users/deleted/', views.DeletedUserList.as_view()),
     path('users/deleted/<int:pk>/', views.DeletedUserDetail.as_view()),
     path('users/<int:pk>/', views.CustomUserDetail.as_view()),
