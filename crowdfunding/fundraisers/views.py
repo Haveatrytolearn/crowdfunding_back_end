@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.db import transaction 
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -82,7 +83,7 @@ class DeletedFundraiserList(APIView):
         return Response(serializer.data)
 
 class DeletedFundraiserDetail(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsAdminOrOwner]  # Only admins and ownerscan see deleted
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrOwner]  # Only admins and owners can see deleted
     
     def get(self, request, pk):
         fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=True)
@@ -101,6 +102,34 @@ class DeletedFundraiserDetail(APIView):
             status=status.HTTP_200_OK
         )
 ###
+
+class RestoreFundraiser(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrOwner]
+    @transaction.atomic
+    def post(self, request, pk):
+        fundraiser = get_object_or_404(
+            Fundraiser,
+            pk=pk,
+            is_deleted=True
+        )
+
+        # 🔐 permission checks
+        self.check_object_permissions(request, fundraiser)
+
+        # Restore fundraiser
+        fundraiser.is_deleted = False
+        fundraiser.is_open = True
+        fundraiser.save(update_fields=["is_deleted", "is_open"])
+
+        # Restore related pledges
+        fundraiser.pledges.filter(is_deleted=True).update(is_deleted=False)
+
+        return Response(
+            {"message": "Fundraiser and related pledges restored successfully"},
+            status=status.HTTP_200_OK
+        )
+
+
 class PledgeList(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

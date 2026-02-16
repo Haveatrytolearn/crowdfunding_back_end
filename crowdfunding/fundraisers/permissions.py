@@ -13,10 +13,14 @@ class IsSupporterOrReadOnly(permissions.BasePermission):
         return obj.supporter == request.user
     
 class IsAdminOrOwner(permissions.BasePermission):
-    """Allow acces to admin and fundraiser owner"""
+   #"""Allow access to admin and fundraiser owner"""
     def has_object_permission(self, request, view, obj):
-        # Admin can see all
-        if request.user and request.user.is_staff:
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        # Admin can access everything
+        if request.user.is_staff:
             return True
-        # The owner can see only his/hers
-        return request.user.is_staff or obj.owner == request.user
+
+        # Owner can access only their own object
+        return obj.owner == request.user

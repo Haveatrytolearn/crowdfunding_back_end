@@ -26,6 +26,7 @@ The platform can be integrated into a company’s internal processes to allow em
 - As a fundraiser owner, I can delete a fundraiser, but all related data, including donors and their pledges, must be retained in the database.
 - As an admin, I can view the list of deleted users and fundraisers.
 - As an admin or fundraiser owner, I can view the details of a deleted fundraiser along with its list of pledges.
+- As an admin, I can restore a deleted user, which will also restore their fundraisers and pledges.
 
 
 ### Front End Pages/Functionality
