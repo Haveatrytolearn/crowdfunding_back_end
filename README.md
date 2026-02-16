@@ -20,13 +20,15 @@ The platform can be integrated into a company’s internal processes to allow em
 - As a registered user, I want to donate to other users’ initiatives so that I can support causes I believe in.
 - As a registered user, I want to see whether I have already donated to an initiative so that I do not accidentally donate twice.
 - As a registered user, I want to update my personal information in my profile so that my account details remain accurate.
-- As a donor, I can edit a pledge, but the amount cannot be changed after donation.
+- As a registered user, I can delete my account, which triggers the soft deletion of my fundraiser and its pledges.
+- As a registered user who made a pledge, I can edit it, but not change the amount.
 - As a fundraiser owner, I want to view donations made to my initiative so that I can track its progress.
 - As a fundraiser owner, I can edit a fundraiser, but the title and description cannot be changed after creation.
 - As a fundraiser owner, I can delete a fundraiser, but all related data, including donors and their pledges, must be retained in the database.
 - As an admin, I can view the list of deleted users and fundraisers.
 - As an admin or fundraiser owner, I can view the details of a deleted fundraiser along with its list of pledges.
 - As an admin, I can restore a deleted user, which will also restore their fundraisers and pledges.
+- As a fundraiser owner or admin, I can restore a deleted fundraiser along with its pledges.
 
 
 ### Front End Pages/Functionality
@@ -47,6 +49,7 @@ The platform can be integrated into a company’s internal processes to allow em
 | /fundraisers/deleted/ | GET | Retrieve deleted fundraisers | N/A | 200 | Authentication/Authorisation |
 | '/fundraisers/deleted/<int:pk>/' | GET | Retrieve a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
 | '/fundraisers/deleted/<int:pk>/' | DELETE | Delete a fundraiser | N/A | 200 | Authentication/Authorisation |
+| 'fundraisers/restore/<int:pk>/' | POST | Restore a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
 | /users/ | GET | Retrieve a list of users | N/A | 200 | Authentication/Authorisation |
 | /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
 | /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
@@ -54,6 +57,7 @@ The platform can be integrated into a company’s internal processes to allow em
 | /users/deleted/ | GET | Retrieve deleted users | N/A | 200 | Authentication/Authorisation |
 | '/users/deleted/<int:pk>/'| GET | Retrieve a deleted user | N/A | 200 | Authentication/Authorisation |
 | '/users/deleted/<int:pk>/'| DELETE | Delete a user | N/A | 200 | Authentication/Authorisation |
+| 'users/restore/<int:pk>/'| POST | Restore a deleted user | N/A | 200 | Authentication/Authorisation |
 | /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | Authentication |
 | /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
 | /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 200 | Authentication/Authorisation |
