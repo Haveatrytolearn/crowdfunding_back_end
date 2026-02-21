@@ -15,4 +15,3 @@ class IsAdminOrOwner(permissions.BasePermission):
             return True
         # The owner can see only his/hers
         return obj == request.user
-        #return obj == request.user

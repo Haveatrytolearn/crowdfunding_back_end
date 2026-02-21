@@ -7,16 +7,17 @@ from django.shortcuts import get_object_or_404
 from .models import CustomUser
 from .permissions import IsAdminOrOwner
 from .serializers import CustomUserSerializer, UserDetailSerializer
+from fundraisers.models import Fundraiser
 
 class CustomUserList(APIView):
     permission_classes = [permissions.AllowAny]
-#
+
     def get_permissions(self):
         if self.request.method == "GET":
             return [permissions.IsAdminUser()]   # the list can view only admin
         return super().get_permissions()         # for POST take AllowAny
 
-#
+
     def get(self, request):
         users = CustomUser.objects.filter(is_active=True)
         serializer = CustomUserSerializer(users, many=True)
@@ -70,7 +71,7 @@ class CustomUserDetail(APIView):
         user.is_active = False
         user.save(update_fields=["is_active"])
         # 2) soft delete all fundraisers owned by this user
-        from fundraisers.models import Fundraiser  # <-- замени fundraisers на имя твоего приложения
+
         Fundraiser.objects.filter(owner=user, is_deleted=False).update(
             is_deleted=True,
             is_open=False
@@ -121,7 +122,7 @@ class RestoreUser(APIView):
         user.is_active = True
         user.save(update_fields=["is_active"])
 #restore fundraiser
-        from fundraisers.models import Fundraiser
+        
         Fundraiser.objects.filter(owner=user, is_deleted=True).update(
             is_deleted=False,
             is_open=True

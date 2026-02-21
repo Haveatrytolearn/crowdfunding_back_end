@@ -3,13 +3,12 @@ from .models import Fundraiser, Pledge
  
 class FundraiserSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
-    ####
     amount_raised = serializers.SerializerMethodField()
     
     def get_amount_raised(self, obj):
         """Count raised sum"""
         return sum([pledge.amount for pledge in obj.pledges.all()])
-###
+
     class Meta:
         model = Fundraiser
         fields = '__all__'
@@ -47,50 +46,44 @@ class PledgeSerializer(serializers.ModelSerializer):
         return data
 
 class FundraiserDetailSerializer(FundraiserSerializer):
-    #pledges = PledgeSerializer(many=True, read_only=True)
     pledges = serializers.SerializerMethodField()
     amount_raised = serializers.SerializerMethodField()
     goal = serializers.ReadOnlyField() # ← not allowed to update
     description = serializers.ReadOnlyField()  # ← not allowed to update
+    owner = serializers.ReadOnlyField(source='owner.id')
+    date_created = serializers.ReadOnlyField()
 
-    #def get_amount_raised(self, obj):
-       # """Count raised sum"""
-        #return sum([pledge.amount for pledge in obj.pledges.all()])
 
     def get_pledges(self, obj):
-        qs = obj.pledges.filter(is_deleted=False)  # ✅ only active pledges
+        qs = obj.pledges.filter(is_deleted=False)  # only active pledges
         return PledgeSerializer(qs, many=True).data
 
     def get_amount_raised(self, obj):
         return sum([p.amount for p in obj.pledges.filter(is_deleted=False)])
 
     def update(self, instance, validated_data):
-        forbidden_fields = ["title", "description"]
+        forbidden_fields = ["title", "description", "owner", "date_created"]
 
         for field in forbidden_fields:
             if field in validated_data:
                 raise serializers.ValidationError(
                     {"Title and description fields cannot be modified."}
                 )
-        # instance.title = validated_data.get('title', instance.title)
-        # instance.description = validated_data.get('description', instance.description)
-        # not allowed to update
+        # not allowed to update title and description, owner, date_created
         instance.goal = validated_data.get('goal', instance.goal)
         instance.image = validated_data.get('image', instance.image)
         instance.is_open = validated_data.get('is_open', instance.is_open)
-        instance.date_created = validated_data.get('date_created', instance.date_created)
-        instance.owner = validated_data.get('owner', instance.owner)
         instance.save()
         return instance
 
 class PledgeDetailSerializer(PledgeSerializer):
-    pledges = PledgeSerializer(many=True, read_only=True)
-    amount = serializers.ReadOnlyField()  # ← amount not allowed to update
+    amount = serializers.ReadOnlyField()  # amount not allowed to update
+    fundraiser = serializers.ReadOnlyField()
+    supporter = serializers.ReadOnlyField(source='supporter.id')
 
     def update(self, instance, validated_data):
-        instance.supporter = validated_data.get('supporter', instance.supporter)
-        instance.fundraiser = validated_data.get('fundraiser', instance.fundraiser)
-        # amount not allowed to update - read-only
+
+        # amount, supporter and fundraiser not allowed to update - read-only
         instance.comment = validated_data.get('comment', instance.comment)
         instance.anonymous = validated_data.get('anonymous', instance.anonymous)
         instance.save()

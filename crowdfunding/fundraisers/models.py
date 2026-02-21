@@ -22,7 +22,7 @@ class Pledge(models.Model):
     comment = models.CharField(max_length=200)
     anonymous = models.BooleanField()
 
-    is_deleted = models.BooleanField(default=False)  # ✅ SOFT delete
+    is_deleted = models.BooleanField(default=False)  # SOFT delete
 
     fundraiser = models.ForeignKey(
         "Fundraiser",
