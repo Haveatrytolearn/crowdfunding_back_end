@@ -46,17 +46,15 @@ The platform can be integrated into a company’s internal processes to allow em
 | /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ | PUT | Update fundraiser details | Updated fundraiser fields | 200 | Authentication/Authorisation |
-| /fundraisers/deleted/ | GET | Retrieve deleted fundraisers | N/A | 200 | Authentication/Authorisation |
-| '/fundraisers/deleted/<int:pk>/' | GET | Retrieve a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
-| '/fundraisers/deleted/<int:pk>/' | DELETE | Delete a fundraiser | N/A | 200 | Authentication/Authorisation |
+| /fundraisers/<int:pk>/ |DELETE| Soft delete fundraiser | N/A | 200 | Authentication/Authorisation |
+| /fundraisers/?deleted=true | GET | Retrieve soft-deleted fundraisers | N/A | 200 | Authentication/Authorisation | 
 | 'fundraisers/restore/<int:pk>/' | POST | Restore a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
 | /users/ | GET | Retrieve a list of users | N/A | 200 | Authentication/Authorisation |
 | /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
 | /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
 | /users/<int:pk> | PUT | Update user details | Updated user fields | 200 | Authentication/Authorisation |
-| /users/deleted/ | GET | Retrieve deleted users | N/A | 200 | Authentication/Authorisation |
-| '/users/deleted/<int:pk>/'| GET | Retrieve a deleted user | N/A | 200 | Authentication/Authorisation |
-| '/users/deleted/<int:pk>/'| DELETE | Delete a user | N/A | 200 | Authentication/Authorisation |
+| /users/<int:pk> | DELETE | Soft delete user | N/A | 200 | Authentication/Authorisation |
+| /users/?deleted=true | GET | Retrieve soft-deleted users | N/A | 200 | Authentication/Authorisation |
 | 'users/restore/<int:pk>/'| POST | Restore a deleted user | N/A | 200 | Authentication/Authorisation |
 | /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | Authentication |
 | /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
