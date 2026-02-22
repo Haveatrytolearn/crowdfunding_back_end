@@ -79,7 +79,7 @@ To register a new user, complete the registration form (see image 3 in the “Fr
 Below is an example of how the request appears in Insomnia:
 ![Token](crowdfunding/Project%20image/Create_new_user.jpg)
 
-To create a new fundraiser, see image 8 in the “Front End Pages / Functionality” section).
+To create a new fundraiser (see image 8 in the “Front End Pages / Functionality” section).
 Below is an example of how the request appears in Insomnia:
 ![Token](crowdfunding/Project%20image/Create_fundraiser.jpg)
 
