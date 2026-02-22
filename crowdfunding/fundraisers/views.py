@@ -15,12 +15,24 @@ class FundraiserList(APIView):
         permissions.IsAuthenticatedOrReadOnly]
     
     def get(self, request):
-        fundraisers = Fundraiser.objects.filter(
-            is_deleted=False,
-            owner__is_active=True)
+        deleted_param = request.query_params.get("deleted", "").lower()
+        wants_deleted = deleted_param in ("1", "true", "yes")
+
+        if wants_deleted:
+            # deleted=true only admin
+            if not request.user.is_authenticated or not request.user.is_staff:
+                raise PermissionDenied("Only admin users can view deleted fundraisers.")
+
+            fundraisers = Fundraiser.objects.filter(is_deleted=True)
+        else:
+            fundraisers = Fundraiser.objects.filter(
+                is_deleted=False,
+                owner__is_active=True)
         serializer = FundraiserSerializer(fundraisers, many=True)
         return Response(serializer.data)
     
+
+
     def post(self, request):
         serializer = FundraiserSerializer(data=request.data)
         if serializer.is_valid():
@@ -74,10 +86,10 @@ class FundraiserDetail(APIView):
             {'message': 'Fundraiser successfully deleted'},
             status=status.HTTP_200_OK
         )
-class DeletedFundraiserList(APIView):
-    permission_classes = [permissions.IsAdminUser]  # Only admins can see deleted
+#class DeletedFundraiserList(APIView):
+    #permission_classes = [permissions.IsAdminUser]  # Only admins can see deleted
     
-    def get(self, request):
+    #def get(self, request):
         fundraisers = Fundraiser.objects.filter(is_deleted=True)
         serializer = FundraiserDetailSerializer(fundraisers, many=True)
         return Response(serializer.data)
@@ -90,17 +102,6 @@ class DeletedFundraiserDetail(APIView):
         self.check_object_permissions(request, fundraiser)
         serializer = FundraiserDetailSerializer(fundraiser)
         return Response(serializer.data)
-
-    #def delete(self, request, pk):
-        fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=True)
-        self.check_object_permissions(request, fundraiser)
-        fundraiser.is_deleted = True
-        fundraiser.is_open = False
-        fundraiser.save(update_fields=["is_deleted", "is_open"])
-        return Response(
-            {'message': 'Fundraiser successfully deleted'},
-            status=status.HTTP_200_OK
-        )
 
 
 class RestoreFundraiser(APIView):

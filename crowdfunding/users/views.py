@@ -19,7 +19,14 @@ class CustomUserList(APIView):
 
 
     def get(self, request):
-        users = CustomUser.objects.filter(is_active=True)
+        deleted_param = request.query_params.get("deleted", "").lower()
+        wants_deleted = deleted_param in ("1", "true", "yes")
+
+        if wants_deleted:
+            users = CustomUser.objects.filter(is_active=False)
+        else:
+            users = CustomUser.objects.filter(is_active=True)
+        #users = CustomUser.objects.filter(is_active=True)
         serializer = CustomUserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -82,10 +89,10 @@ class CustomUserDetail(APIView):
             status=status.HTTP_200_OK
         )
 
-class DeletedUserList(APIView):
-    permission_classes = [permissions.IsAdminUser]  # Only admins can see deleted
+#class DeletedUserList(APIView):
+    #permission_classes = [permissions.IsAdminUser]  # Only admins can see deleted
     
-    def get(self, request):
+    #def get(self, request):
         user = CustomUser.objects.filter(is_active=False)
         serializer = UserDetailSerializer(user, many=True)
         return Response(serializer.data)
