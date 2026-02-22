@@ -6,12 +6,12 @@ Maria Alistratova
 The name of the project is **Generousource**
 Deployment link (Heroku): https://generousource-9fa74612af46.herokuapp.com/
 
-This project is a web platform that allows registered users to create fundraising initiatives for various causes and support other users’ initiatives through monetary donations. Users can make donations in any amount, and the system ensures that the total pledged amount does not exceed the fundraising target.
+This project is a web platform that allows registered users to create fundraising initiatives for various causes and support other users’ initiatives through monetary donations. Users can make donations in any amount, provided that the total pledged amount does not exceed the fundraising target.
 
 ### Intended Audience/User Stories
 ##### Intended Audience
 The platform is intended for individuals who wish to raise funds for personal, social, or community causes, as well as for users who want to contribute financially to initiatives created by others.
-The platform can be integrated into a company’s internal processes to allow employees to create fundraising initiatives for their needs.
+It can also be integrated into a company’s internal processes, allowing employees to create fundraising initiatives for their needs.
 
 - As a visitor, I want to browse existing fundraising initiatives so that I can decide whether I want to register on the platform and support a cause.
 - As a visitor, I want to register on the website so that I can donate to existing initiatives or create my own fundraiser.
@@ -20,13 +20,12 @@ The platform can be integrated into a company’s internal processes to allow em
 - As a registered user, I want to donate to other users’ initiatives so that I can support causes I believe in.
 - As a registered user, I want to see whether I have already donated to an initiative so that I do not accidentally donate twice.
 - As a registered user or admin, I can update a user's personal information in their profile so that the account details remain accurate.
-- As a registered user or admin, I can delete a user's account, which triggers the soft deletion of their fundraiser and theirs pledges.
+- As a registered user or admin, I can delete a user's account, which triggers the soft deletion of their fundraisers and their pledges.
 - As a registered user who made a pledge, I can edit it, but not change the amount.
 - As a fundraiser owner, I want to view donations made to my initiative so that I can track its progress.
 - As a fundraiser owner or admin, I can edit a fundraiser, but the title and description cannot be changed after creation.
 - As a fundraiser owner or admin, I can delete a fundraiser, which triggers the soft deletion of the fundraiser and its associated pledges.
 - As an admin, I can view the list of deleted users and fundraisers.
-- As an admin, I can view the details of a deleted fundraiser along with its list of pledges.
 - As an admin, I can restore a deleted user, which will also restore their fundraisers and pledges.
 - As an admin, I can restore a deleted fundraiser along with its pledges.
 
@@ -41,21 +40,19 @@ The platform can be integrated into a company’s internal processes to allow em
 
 | URL | HTTP Method | Purpose | Request Body | Success Response Code | Authentication/Authorisation |
 | --- | ----------- | ------- | ------------ | --------------------- | ---------------------------- |
-|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | Authentication |
-| /fundraisers/ | GET | Retrieve a list of fundraisers | N/A | 200 | None |
+|/api-token-auth/|POST| Authenticate a user and get token| username, password |200 | None |
+| /fundraisers/ | GET | Retrieve a list of fundraisers (supports ?deleted=true – Admin only) | N/A | 200 | None (deleted=true Admin only) |
 | /fundraisers/ | POST | Create fundraiser | title, description,goal, image | 201 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ | GET | Retrieve fundraiser details | N/A | 200 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ | PUT | Update fundraiser details | Updated fundraiser fields | 200 | Authentication/Authorisation |
 | /fundraisers/<int:pk>/ |DELETE| Soft delete fundraiser | N/A | 200 | Authentication/Authorisation |
-| /fundraisers/?deleted=true | GET | Retrieve soft-deleted fundraisers | N/A | 200 | Authentication/Authorisation | 
-| 'fundraisers/restore/<int:pk>/' | POST | Restore a deleted fundraiser | N/A | 200 | Authentication/Authorisation |
-| /users/ | GET | Retrieve a list of users | N/A | 200 | Authentication/Authorisation |
-| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | Authentication/Authorisation |
+| 'fundraisers/restore/<int:pk>/' | POST | Restore a soft-deleted fundraiser | N/A | 200 | Authentication/Authorisation |
+| /users/ | GET | Retrieve a list of users (supports ?deleted=true – Admin only) | N/A | 200 | Admin only |
+| /users/ | POST | Create a user | username, password, email,first_name, last_name | 201 | None |
 | /users/<int:pk> | GET | Retrieve user details | N/A | 200 | Authentication/Authorisation|
 | /users/<int:pk> | PUT | Update user details | Updated user fields | 200 | Authentication/Authorisation |
 | /users/<int:pk> | DELETE | Soft delete user | N/A | 200 | Authentication/Authorisation |
-| /users/?deleted=true | GET | Retrieve soft-deleted users | N/A | 200 | Authentication/Authorisation |
-| 'users/restore/<int:pk>/'| POST | Restore a deleted user | N/A | 200 | Authentication/Authorisation |
+| 'users/restore/<int:pk>/'| POST | Restore a soft-deleted user and all related fundraisers (and pledges) | N/A | 200 | Admin only |
 | /pledges/ | GET | Retrieve a list of pledges | N/A | 200 | Authentication |
 | /pledges/ | POST | Create a new donation | amount, comment, anonymous, fundraiser | 201 | Authentication |
 | /pledges/<int:pk> | PUT | Update some pledge details, except amount | Update relevant pledge fields | 200 | Authentication/Authorisation |
