@@ -70,6 +70,8 @@ class FundraiserDetailSerializer(FundraiserSerializer):
                     {"Title and description fields cannot be modified."}
                 )
         # not allowed to update title and description, owner, date_created
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
         instance.goal = validated_data.get('goal', instance.goal)
         instance.image = validated_data.get('image', instance.image)
         instance.is_open = validated_data.get('is_open', instance.is_open)
