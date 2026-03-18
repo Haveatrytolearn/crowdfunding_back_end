@@ -62,12 +62,12 @@ class FundraiserDetailSerializer(FundraiserSerializer):
         return sum([p.amount for p in obj.pledges.filter(is_deleted=False)])
 
     def update(self, instance, validated_data):
-        forbidden_fields = ["title", "description", "owner", "date_created"]
+        forbidden_fields = ["owner", "date_created"]
 
         for field in forbidden_fields:
             if field in validated_data:
                 raise serializers.ValidationError(
-                    {"Title and description fields cannot be modified."}
+                    {"The owner and creation date fields cannot be modified."}
                 )
         # not allowed to update title and description, owner, date_created
         instance.title = validated_data.get('title', instance.title)
