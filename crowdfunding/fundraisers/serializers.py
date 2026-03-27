@@ -45,21 +45,47 @@ class PledgeSerializer(serializers.ModelSerializer):
         
         return data
 
-class FundraiserDetailSerializer(FundraiserSerializer):
+class FundraiserDetailSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.id')
     pledges = serializers.SerializerMethodField()
     amount_raised = serializers.SerializerMethodField()
-    goal = serializers.ReadOnlyField() # ← not allowed to update
-    description = serializers.ReadOnlyField()  # ← not allowed to update
-    owner = serializers.ReadOnlyField(source='owner.id')
+    has_donated = serializers.SerializerMethodField()
     date_created = serializers.ReadOnlyField()
 
+    class Meta:
+        model = Fundraiser
+        fields = [
+            "id",
+            "owner",
+            "title",
+            "description",
+            "goal",
+            "image",
+            "is_open",
+            "is_deleted",
+            "date_created",
+            "amount_raised",
+            "pledges",
+            "has_donated",
+        ]
 
     def get_pledges(self, obj):
-        qs = obj.pledges.filter(is_deleted=False)  # only active pledges
+        qs = obj.pledges.filter(is_deleted=False)
         return PledgeSerializer(qs, many=True).data
 
     def get_amount_raised(self, obj):
         return sum([p.amount for p in obj.pledges.filter(is_deleted=False)])
+
+    def get_has_donated(self, obj):
+        request = self.context.get("request")
+
+        if not request or not request.user.is_authenticated:
+            return False
+
+        return obj.pledges.filter(
+            supporter=request.user,
+            is_deleted=False
+        ).exists()
 
     def update(self, instance, validated_data):
         forbidden_fields = ["owner", "date_created"]
@@ -69,12 +95,12 @@ class FundraiserDetailSerializer(FundraiserSerializer):
                 raise serializers.ValidationError(
                     {"The owner and creation date fields cannot be modified."}
                 )
-        # not allowed to update title and description, owner, date_created
-        instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
-        instance.goal = validated_data.get('goal', instance.goal)
-        instance.image = validated_data.get('image', instance.image)
-        instance.is_open = validated_data.get('is_open', instance.is_open)
+
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get("description", instance.description)
+        instance.goal = validated_data.get("goal", instance.goal)
+        instance.image = validated_data.get("image", instance.image)
+        instance.is_open = validated_data.get("is_open", instance.is_open)
         instance.save()
         return instance
 

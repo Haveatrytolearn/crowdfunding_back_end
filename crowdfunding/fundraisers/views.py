@@ -9,6 +9,7 @@ from rest_framework import status, permissions
 from .models import Fundraiser, Pledge
 from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly, IsAdminOrOwner
 from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer, PledgeDetailSerializer
+from rest_framework.exceptions import PermissionDenied
 
 class FundraiserList(APIView):
     permission_classes = [
@@ -53,7 +54,10 @@ class FundraiserDetail(APIView):
     
     def get(self, request, pk):
         fundraiser = get_object_or_404(Fundraiser, pk=pk, is_deleted=False, owner__is_active=True)
-        serializer = FundraiserDetailSerializer(fundraiser)
+        serializer = FundraiserDetailSerializer(
+            fundraiser,
+            context={"request": request}
+        )
         return Response(serializer.data)
  
  # Biagio version of the code   
