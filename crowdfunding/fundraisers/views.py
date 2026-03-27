@@ -172,8 +172,9 @@ class PledgeList(APIView):
     
 class PledgesDetail(APIView):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsSupporterOrReadOnly
+        IsOwnerOrReadOnly,
+        IsSupporterOrReadOnly,  
+        IsAdminOrOwner
     ]
     
     def get(self, request, pk):
