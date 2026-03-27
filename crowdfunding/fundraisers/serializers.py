@@ -70,8 +70,20 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_pledges(self, obj):
+        request = self.context.get("request")
         qs = obj.pledges.filter(is_deleted=False)
-        return PledgeSerializer(qs, many=True).data
+
+        if not request or not request.user.is_authenticated:
+            return []
+
+        if request.user.is_staff:
+            visible_pledges = qs
+        elif obj.owner == request.user:
+            visible_pledges = qs
+        else:
+            visible_pledges = qs.filter(supporter=request.user)
+
+        return PledgeSerializer(visible_pledges, many=True).data
 
     def get_amount_raised(self, obj):
         return sum([p.amount for p in obj.pledges.filter(is_deleted=False)])

@@ -24,3 +24,19 @@ class IsAdminOrOwner(permissions.BasePermission):
 
         # Owner can access only their own object
         return obj.owner == request.user
+    
+class IsAdminFundraiserOwnerOrSupporter(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        if request.user.is_staff:
+            return True
+
+        if obj.fundraiser.owner == request.user:
+            return True
+
+        if obj.supporter == request.user:
+            return True
+
+        return False

@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Fundraiser, Pledge
-from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly, IsAdminOrOwner
+from .permissions import IsOwnerOrReadOnly, IsSupporterOrReadOnly, IsAdminOrOwner, IsAdminFundraiserOwnerOrSupporter
 from .serializers import FundraiserSerializer, PledgeSerializer, FundraiserDetailSerializer, PledgeDetailSerializer
 from rest_framework.exceptions import PermissionDenied
 
@@ -151,7 +151,7 @@ class PledgeList(APIView):
             pledges = base_qs.filter(
                 Q(supporter=request.user) |  # His pledges
                 Q(fundraiser__owner=request.user)  # Pledges to his fundraisers
-            )
+            ).distinct()
         
         serializer = PledgeSerializer(pledges, many=True)
         return Response(serializer.data)
@@ -172,26 +172,30 @@ class PledgeList(APIView):
     
 class PledgesDetail(APIView):
     permission_classes = [
-        IsOwnerOrReadOnly,
-        IsSupporterOrReadOnly,  
-        IsAdminOrOwner
+        permissions.IsAuthenticated,
+        IsAdminFundraiserOwnerOrSupporter
     ]
     
     def get(self, request, pk):
         pledge = get_object_or_404(Pledge, pk=pk, is_deleted=False, fundraiser__is_deleted=False)
+        self.check_object_permissions(request, pledge)
         serializer = PledgeSerializer(pledge)
         return Response(serializer.data)
     
  # Biagio version of the code   
     def put(self, request, pk):
-        pledge = get_object_or_404(Pledge, pk=pk, is_deleted=False, fundraiser__is_deleted=False)
+        pledge = get_object_or_404(
+            Pledge,
+            pk=pk,
+            is_deleted=False,
+            fundraiser__is_deleted=False
+        )
         self.check_object_permissions(request, pledge)
         serializer = PledgeDetailSerializer(
             instance=pledge,
             data=request.data,
             partial=True
         )
-
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
