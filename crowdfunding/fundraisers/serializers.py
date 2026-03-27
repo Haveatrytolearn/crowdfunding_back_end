@@ -14,7 +14,7 @@ class FundraiserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PledgeSerializer(serializers.ModelSerializer):
-    supporter = serializers.ReadOnlyField(source='supporter.id')
+    supporter = serializers.SerializerMethodField()
     fundraiser = serializers.PrimaryKeyRelatedField(
         queryset=Fundraiser.objects.filter(is_deleted=False))  # added filter for deleted
         
@@ -22,6 +22,11 @@ class PledgeSerializer(serializers.ModelSerializer):
         model = Pledge
         fields = "__all__"
         read_only_fields = ("is_deleted",)
+
+    def get_supporter(self, obj):
+        if obj.anonymous:
+            return "Anonymous"
+        return f"{obj.supporter.first_name} {obj.supporter.last_name}".strip()
 
     def validate(self, data):
         """Check if the pledge exceeds the amount of the fundraiser"""
@@ -119,7 +124,7 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
 class PledgeDetailSerializer(PledgeSerializer):
     amount = serializers.ReadOnlyField()  # amount not allowed to update
     fundraiser = serializers.ReadOnlyField()
-    supporter = serializers.ReadOnlyField(source='supporter.id')
+    
 
     def update(self, instance, validated_data):
 
