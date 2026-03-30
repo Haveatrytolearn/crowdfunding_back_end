@@ -1,23 +1,25 @@
 from rest_framework import serializers
-from .models import Fundraiser, Pledge
- 
+from .models import Fundraiser, Pledge, FundraiserChangeLog
+
+
 class FundraiserSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.id')
+    owner = serializers.ReadOnlyField(source="owner.id")
     amount_raised = serializers.SerializerMethodField()
-    
+
     def get_amount_raised(self, obj):
-        """Count raised sum"""
-        return sum([pledge.amount for pledge in obj.pledges.all()])
+        return sum([pledge.amount for pledge in obj.pledges.filter(is_deleted=False)])
 
     class Meta:
         model = Fundraiser
-        fields = '__all__'
+        fields = "__all__"
+
 
 class PledgeSerializer(serializers.ModelSerializer):
     supporter = serializers.SerializerMethodField()
     fundraiser = serializers.PrimaryKeyRelatedField(
-        queryset=Fundraiser.objects.filter(is_deleted=False))  # added filter for deleted
-        
+        queryset=Fundraiser.objects.filter(is_deleted=False)
+    )
+
     class Meta:
         model = Pledge
         fields = "__all__"
@@ -29,17 +31,14 @@ class PledgeSerializer(serializers.ModelSerializer):
         return f"{obj.supporter.first_name} {obj.supporter.last_name}".strip()
 
     def validate(self, data):
-        """Check if the pledge exceeds the amount of the fundraiser"""
-        fundraiser = data.get('fundraiser')
-        amount = data.get('amount')
-        
+        fundraiser = data.get("fundraiser")
+        amount = data.get("amount")
+
         if fundraiser and amount:
-            # Count total pledges
             total_pledges = sum([
-                pledge.amount for pledge in fundraiser.pledges.all()
+                pledge.amount for pledge in fundraiser.pledges.filter(is_deleted=False)
             ])
-            
-            # If new pledge exceeds the rest of the amount 
+
             if total_pledges + amount > fundraiser.goal:
                 raise serializers.ValidationError(
                     f"Cannot pledge more than goal. "
@@ -47,15 +46,36 @@ class PledgeSerializer(serializers.ModelSerializer):
                     f"Already raised: {total_pledges}, "
                     f"Remaining: {fundraiser.goal - total_pledges}"
                 )
-        
+
         return data
 
+
+class FundraiserChangeLogSerializer(serializers.ModelSerializer):
+    changed_by_username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FundraiserChangeLog
+        fields = [
+            "id",
+            "field_name",
+            "old_value",
+            "new_value",
+            "changed_at",
+            "changed_by_username",
+        ]
+
+    def get_changed_by_username(self, obj):
+        full_name = f"{obj.changed_by.first_name} {obj.changed_by.last_name}".strip()
+        return full_name if full_name else obj.changed_by.username
+
+
 class FundraiserDetailSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.id')
+    owner = serializers.ReadOnlyField(source="owner.id")
     pledges = serializers.SerializerMethodField()
     amount_raised = serializers.SerializerMethodField()
     has_donated = serializers.SerializerMethodField()
     date_created = serializers.ReadOnlyField()
+    change_logs = FundraiserChangeLogSerializer(many=True, read_only=True)
 
     class Meta:
         model = Fundraiser
@@ -72,6 +92,7 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
             "amount_raised",
             "pledges",
             "has_donated",
+            "change_logs",
         ]
 
     def get_pledges(self, obj):
@@ -110,7 +131,7 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
         for field in forbidden_fields:
             if field in validated_data:
                 raise serializers.ValidationError(
-                    {"The owner and creation date fields cannot be modified."}
+                    {"detail": "The owner and creation date fields cannot be modified."}
                 )
 
         instance.title = validated_data.get("title", instance.title)
@@ -121,15 +142,13 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class PledgeDetailSerializer(PledgeSerializer):
-    amount = serializers.ReadOnlyField()  # amount not allowed to update
+    amount = serializers.ReadOnlyField()
     fundraiser = serializers.ReadOnlyField()
-    
 
     def update(self, instance, validated_data):
-
-        # amount, supporter and fundraiser not allowed to update - read-only
-        instance.comment = validated_data.get('comment', instance.comment)
-        instance.anonymous = validated_data.get('anonymous', instance.anonymous)
+        instance.comment = validated_data.get("comment", instance.comment)
+        instance.anonymous = validated_data.get("anonymous", instance.anonymous)
         instance.save()
         return instance

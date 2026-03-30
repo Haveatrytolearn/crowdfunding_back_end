@@ -21,7 +21,6 @@ It can also be integrated into a company’s internal processes, allowing employ
 - As a registered user, I want to see whether I have already donated to an initiative so that I do not accidentally donate twice.
 - As a registered user or admin, I can update a user's personal information in their profile so that the account details remain accurate.
 - As a registered user or admin, I can delete a user's account, which triggers the soft deletion of their fundraisers and their pledges.
-- As a registered user who made a pledge, I can edit it, but not change the amount.
 - As a fundraiser owner, I want to view donations made to my initiative so that I can track its progress.
 - As a fundraiser owner or admin, I can edit a fundraiser.
 - As a fundraiser owner or admin, I can delete a fundraiser, which triggers the soft deletion of the fundraiser and its associated pledges.
