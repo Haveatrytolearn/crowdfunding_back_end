@@ -25,7 +25,7 @@ class CustomUserList(APIView):
         if wants_deleted:
             users = CustomUser.objects.filter(is_active=False)
         else:
-            users = CustomUser.objects.filter(is_deleted=False)
+            users = CustomUser.objects.filter(is_active=True)
         #users = CustomUser.objects.filter(is_active=True)
         serializer = CustomUserSerializer(users, many=True)
         return Response(serializer.data)
@@ -119,9 +119,8 @@ class CustomUserDetail(APIView):
         self.check_object_permissions(request, user)
 
         old_is_active = user.is_active
-        user.is_active = True
-        user.is_deleted = False
-        user.save(update_fields=["is_active", "is_deleted"])
+        user.is_active = False
+        user.save(update_fields=["is_active"])
 
         # Логирование удаления (деактивации) пользователя
         UserChangeLog.objects.create(
@@ -157,6 +156,7 @@ class DeletedUserDetail(APIView):
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
+        print("request.data =", request.data)
         serializer = self.serializer_class(
             data=request.data,
             context={"request": request}
@@ -167,7 +167,7 @@ class CustomAuthToken(ObtainAuthToken):
 
         return Response({
             "token": token.key,
-            "user_id": user.id,
+            "user_id": user.pk,
             "email": user.email,
             "is_staff": user.is_staff,
         })
