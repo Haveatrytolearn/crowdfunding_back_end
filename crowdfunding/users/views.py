@@ -8,6 +8,7 @@ from .models import CustomUser, UserChangeLog
 from .permissions import IsAdminOrOwner
 from .serializers import CustomUserSerializer, UserDetailSerializer, AdminUserSerializer
 from fundraisers.models import Fundraiser
+from django.db.models import Q
 
 class CustomUserList(APIView):
     permission_classes = [permissions.AllowAny]
@@ -22,11 +23,21 @@ class CustomUserList(APIView):
         deleted_param = request.query_params.get("deleted", "").lower()
         wants_deleted = deleted_param in ("1", "true", "yes")
 
+        search = request.query_params.get("search", "")
+
         if wants_deleted:
             users = CustomUser.objects.filter(is_active=False)
         else:
             users = CustomUser.objects.filter(is_active=True)
-        #users = CustomUser.objects.filter(is_active=True)
+
+        if search:
+            users = users.filter(
+            Q(username__icontains=search) |
+            Q(email__icontains=search) |
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search)
+        )
+
         serializer = CustomUserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -180,13 +191,8 @@ class RestoreUser(APIView):
         user = get_object_or_404(CustomUser, pk=pk, is_active=False)
         user.is_active = True
         user.save(update_fields=["is_active"])
-
-        Fundraiser.objects.filter(owner=user, is_deleted=True).update(
-            is_deleted=False,
-            is_open=True
-        )
         
         return Response(
-            {"message": "User and related fundraisers restored successfully"},
+            {"message": "User restored successfully. Related fundraisers remain deleted until restored separately."},
             status=status.HTTP_200_OK
         )

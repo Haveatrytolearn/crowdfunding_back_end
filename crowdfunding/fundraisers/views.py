@@ -21,7 +21,6 @@ from .serializers import (
     PledgeDetailSerializer,
 )
 
-
 class FundraiserList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -32,7 +31,7 @@ class FundraiserList(APIView):
         if wants_deleted:
             if not request.user.is_authenticated or not request.user.is_staff:
                 raise PermissionDenied("Only admin users can view deleted fundraisers.")
-            fundraisers = Fundraiser.objects.filter(is_deleted=True)
+            fundraisers = Fundraiser.objects.filter(is_deleted=True).order_by("-id")
         else:
             fundraisers = Fundraiser.objects.filter(
                 is_deleted=False,
@@ -173,6 +172,14 @@ class RestoreFundraiser(APIView):
             pk=pk,
             is_deleted=True
         )
+
+        if not fundraiser.owner.is_active:
+            return Response(
+                {
+                    "detail": "The owner account must be restored before this fundraiser can be restored."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         self.check_object_permissions(request, fundraiser)
 

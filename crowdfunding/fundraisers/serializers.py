@@ -4,6 +4,8 @@ from .models import Fundraiser, Pledge, FundraiserChangeLog
 
 class FundraiserSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source="owner.id")
+    owner_username = serializers.ReadOnlyField(source="owner.username")
+    owner_is_active = serializers.ReadOnlyField(source="owner.is_active")
     amount_raised = serializers.SerializerMethodField()
 
     def get_amount_raised(self, obj):
