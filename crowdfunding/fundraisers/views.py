@@ -223,7 +223,15 @@ class PledgeList(APIView):
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(supporter=request.user)
+            spledge = serializer.save(supporter=request.user)
+            total_raised = sum(
+                p.amount for p in fundraiser.pledges.filter(is_deleted=False)
+            )
+
+            if total_raised >= fundraiser.goal and fundraiser.is_open:
+                fundraiser.is_open = False
+                fundraiser.save(update_fields=["is_open"])
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
