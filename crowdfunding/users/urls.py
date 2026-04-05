@@ -5,4 +5,5 @@ urlpatterns = [
     path('users/', views.CustomUserList.as_view()),
     path("users/restore/<int:pk>/", views.RestoreUser.as_view()),
     path('users/<int:pk>/', views.CustomUserDetail.as_view()),
+    path("activity-logs/", views.AdminActivityLogs.as_view()),
 ]

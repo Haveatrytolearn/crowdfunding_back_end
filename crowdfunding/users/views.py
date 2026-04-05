@@ -1,3 +1,4 @@
+from itertools import chain
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -9,6 +10,7 @@ from .permissions import IsAdminOrOwner
 from .serializers import CustomUserSerializer, UserDetailSerializer, AdminUserSerializer
 from fundraisers.models import Fundraiser
 from django.db.models import Q
+from fundraisers.models import FundraiserChangeLog
 
 class CustomUserList(APIView):
     permission_classes = [permissions.AllowAny]
@@ -26,9 +28,9 @@ class CustomUserList(APIView):
         search = request.query_params.get("search", "")
 
         if wants_deleted:
-            users = CustomUser.objects.filter(is_active=False)
+            users = CustomUser.objects.filter(is_active=False).order_by("id")
         else:
-            users = CustomUser.objects.filter(is_active=True)
+            users = CustomUser.objects.filter(is_active=True).order_by("id")
 
         if search:
             users = users.filter(
@@ -196,3 +198,53 @@ class RestoreUser(APIView):
             {"message": "User restored successfully. Related fundraisers remain deleted until restored separately."},
             status=status.HTTP_200_OK
         )
+    
+class AdminActivityLogs(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        search = request.query_params.get("search", "").strip().lower()
+
+        user_logs = [
+            {
+                "id": f"user-{log.id}",
+                "log_type": "user",
+                "entity_label": log.user.username,
+                "changed_by": log.changed_by.username,
+                "field_name": log.field_name,
+                "old_value": log.old_value,
+                "new_value": log.new_value,
+                "changed_at": log.changed_at,
+            }
+            for log in UserChangeLog.objects.select_related("user", "changed_by").all()
+        ]
+
+        fundraiser_logs = [
+            {
+                "id": f"fundraiser-{log.id}",
+                "log_type": "fundraiser",
+                "entity_label": log.fundraiser.title,
+                "changed_by": log.changed_by.username,
+                "field_name": log.field_name,
+                "old_value": log.old_value,
+                "new_value": log.new_value,
+                "changed_at": log.changed_at,
+            }
+            for log in FundraiserChangeLog.objects.select_related("fundraiser", "changed_by").all()
+        ]
+
+        combined_logs = list(chain(user_logs, fundraiser_logs))
+        combined_logs.sort(key=lambda item: item["changed_at"], reverse=True)
+
+        if search:
+            combined_logs = [
+                log for log in combined_logs
+                if search in str(log["entity_label"]).lower()
+                or search in str(log["changed_by"]).lower()
+                or search in str(log["field_name"]).lower()
+                or search in str(log["old_value"] or "").lower()
+                or search in str(log["new_value"] or "").lower()
+                or search in str(log["log_type"]).lower()
+            ]
+
+        return Response(combined_logs)

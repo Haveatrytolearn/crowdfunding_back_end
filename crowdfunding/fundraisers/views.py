@@ -31,12 +31,12 @@ class FundraiserList(APIView):
         if wants_deleted:
             if not request.user.is_authenticated or not request.user.is_staff:
                 raise PermissionDenied("Only admin users can view deleted fundraisers.")
-            fundraisers = Fundraiser.objects.filter(is_deleted=True).order_by("-id")
+            fundraisers = Fundraiser.objects.filter(is_deleted=True).order_by("id")
         else:
             fundraisers = Fundraiser.objects.filter(
                 is_deleted=False,
                 owner__is_active=True
-            )
+            ).order_by("id")
 
         serializer = FundraiserSerializer(fundraisers, many=True)
         return Response(serializer.data)
