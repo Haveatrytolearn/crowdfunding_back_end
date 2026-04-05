@@ -223,7 +223,9 @@ class PledgeList(APIView):
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
         if serializer.is_valid():
-            spledge = serializer.save(supporter=request.user)
+            pledge = serializer.save(supporter=request.user)
+
+            fundraiser = pledge.fundraiser
             total_raised = sum(
                 p.amount for p in fundraiser.pledges.filter(is_deleted=False)
             )
