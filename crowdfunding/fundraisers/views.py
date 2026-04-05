@@ -25,6 +25,7 @@ class FundraiserList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request):
+        
         deleted_param = request.query_params.get("deleted", "").lower()
         wants_deleted = deleted_param in ("1", "true", "yes")
 
@@ -38,7 +39,11 @@ class FundraiserList(APIView):
                 owner__is_active=True
             ).order_by("id")
 
-        serializer = FundraiserSerializer(fundraisers, many=True)
+        serializer = FundraiserSerializer(
+            fundraisers,
+            many=True,
+            context={"request": request}
+        )
         return Response(serializer.data)
 
     def post(self, request):

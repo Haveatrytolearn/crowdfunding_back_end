@@ -7,9 +7,22 @@ class FundraiserSerializer(serializers.ModelSerializer):
     owner_username = serializers.ReadOnlyField(source="owner.username")
     owner_is_active = serializers.ReadOnlyField(source="owner.is_active")
     amount_raised = serializers.SerializerMethodField()
+    has_donated = serializers.SerializerMethodField()
 
     def get_amount_raised(self, obj):
         return sum([pledge.amount for pledge in obj.pledges.filter(is_deleted=False)])
+    
+    def get_has_donated(self, obj):
+        request = self.context.get("request")
+
+        if not request or not request.user.is_authenticated:
+            return False
+
+        return obj.pledges.filter(
+            supporter=request.user,
+            is_deleted=False
+        ).exists()
+
 
     class Meta:
         model = Fundraiser
