@@ -25,8 +25,9 @@ It can also be integrated into a company’s internal processes, allowing employ
 - As a fundraiser owner or admin, I can edit a fundraiser.
 - As a fundraiser owner or admin, I can delete a fundraiser, which triggers the soft deletion of the fundraiser and its associated pledges.
 - As an admin, I can view the list of deleted users and fundraisers.
-- As an admin, I can restore a deleted user, which will also restore their fundraisers and pledges.
+- As an admin, I can restore a deleted user.
 - As an admin, I can restore a deleted fundraiser along with its pledges.
+- As an admin, I can view all activity logs for fundraisers and users in one place.
 
 
 ### Front End Pages/Functionality
