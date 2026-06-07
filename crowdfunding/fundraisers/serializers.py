@@ -11,6 +11,16 @@ class FundraiserSerializer(serializers.ModelSerializer):
 
     def get_amount_raised(self, obj):
         return sum([pledge.amount for pledge in obj.pledges.filter(is_deleted=False)])
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        amount_raised = int(representation.get("amount_raised") or 0)
+        goal = int(representation.get("goal") or 0)
+
+        if amount_raised >= goal:
+            representation["is_open"] = False
+
+        return representation
     
     def get_has_donated(self, obj):
         request = self.context.get("request")
@@ -49,12 +59,22 @@ class PledgeSerializer(serializers.ModelSerializer):
         fundraiser = data.get("fundraiser")
         amount = data.get("amount")
 
-        if fundraiser and amount:
+        if fundraiser:
             total_pledges = sum([
                 pledge.amount for pledge in fundraiser.pledges.filter(is_deleted=False)
             ])
 
-            if total_pledges + amount > fundraiser.goal:
+            if not fundraiser.is_open or total_pledges >= fundraiser.goal:
+                raise serializers.ValidationError(
+                    "This fundraiser is closed. Donations are no longer accepted."
+                )
+
+            if amount is not None and amount < 1:
+                raise serializers.ValidationError(
+                    "Donation amount must be at least 1."
+                )
+
+            if amount is not None and total_pledges + amount > fundraiser.goal:
                 raise serializers.ValidationError(
                     f"Cannot pledge more than goal. "
                     f"Goal: {fundraiser.goal}, "
@@ -129,6 +149,16 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
     def get_amount_raised(self, obj):
         return sum([p.amount for p in obj.pledges.filter(is_deleted=False)])
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        amount_raised = int(representation.get("amount_raised") or 0)
+        goal = int(representation.get("goal") or 0)
+
+        if amount_raised >= goal:
+            representation["is_open"] = False
+
+        return representation
+
     def get_has_donated(self, obj):
         request = self.context.get("request")
 
@@ -149,11 +179,17 @@ class FundraiserDetailSerializer(serializers.ModelSerializer):
                     {"detail": "The owner and creation date fields cannot be modified."}
                 )
 
+        requested_is_open = validated_data.get("is_open", instance.is_open)
+
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get("description", instance.description)
         instance.goal = validated_data.get("goal", instance.goal)
         instance.image = validated_data.get("image", instance.image)
-        instance.is_open = validated_data.get("is_open", instance.is_open)
+
+        total_pledges = sum([
+            pledge.amount for pledge in instance.pledges.filter(is_deleted=False)
+        ])
+        instance.is_open = requested_is_open and total_pledges < instance.goal
         instance.save()
         return instance
 

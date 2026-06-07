@@ -188,8 +188,10 @@ class RestoreFundraiser(APIView):
 
         self.check_object_permissions(request, fundraiser)
 
+        total_raised = sum(p.amount for p in fundraiser.pledges.all())
+
         fundraiser.is_deleted = False
-        fundraiser.is_open = True
+        fundraiser.is_open = total_raised < fundraiser.goal
         fundraiser.save(update_fields=["is_deleted", "is_open"])
 
         fundraiser.pledges.filter(is_deleted=True).update(is_deleted=False)
@@ -220,6 +222,7 @@ class PledgeList(APIView):
         serializer = PledgeSerializer(pledges, many=True)
         return Response(serializer.data)
 
+    @transaction.atomic
     def post(self, request):
         serializer = PledgeSerializer(data=request.data)
         if serializer.is_valid():
